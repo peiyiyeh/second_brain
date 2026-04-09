@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-fade-in: fade-in 0.8s ease-out;
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --bg-color: #1a1a1a;
+    --text-color: #e5e5e5;
+    --muted-color: #888888;
+    --border-color: #333333;
+    --accent-color: #bbbbbb;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* 移除原生的所有預設滾動條樣式，改用更細緻的樣式 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-color);
+  }
+}
+
+@layer components {
+  /* 禪風 UI 基本元件 */
+  .zen-border {
+    @apply border border-[#333333] transition-colors duration-300;
+  }
+  .zen-hover-border {
+    @apply hover:border-[#666666];
+  }
+  .zen-panel {
+    @apply p-4 sm:p-6 border border-[#333333] transition-colors duration-300 rounded-none; /* 無圓角或微圓角以符合克制 */
+  }
+  .zen-text-muted {
+    @apply text-[#888888];
+  }
+  .zen-title {
+    @apply text-xl font-light tracking-wider text-[#bbbbbb];
+  }
+  
+  /* 隱藏/顯示操作按鈕邏輯 */
+  .action-hidden {
+    @apply opacity-0 transition-opacity duration-300;
+  }
+  .group:hover .action-hidden {
+    @apply opacity-100;
+  }
+}
