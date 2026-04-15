@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Target, BookOpen, Activity, Box, Compass, Download, Upload, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, Target, BookOpen, Activity, Box, Compass, Download, Upload, FileSpreadsheet, LineChart, Briefcase, BookMarked } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 const Sidebar = () => {
@@ -10,6 +10,9 @@ const Sidebar = () => {
     { name: '覺察', path: '/awareness', icon: Activity },
     { name: '流動', path: '/inventory', icon: Box },
     { name: '編織', path: '/knitting', icon: Compass },
+    { name: '投資總覽', path: '/invest', icon: LineChart },
+    { name: '投資組合', path: '/invest/portfolio', icon: Briefcase },
+    { name: '投資日誌', path: '/invest/journal', icon: BookMarked },
   ];
 
   const handleExport = () => {
@@ -48,6 +51,8 @@ const Sidebar = () => {
       addSheet('Goals', state.goals);
       addSheet('Yarn', state.yarn);
       addSheet('Projects', state.projects);
+      addSheet('Portfolio', state.portfolio);
+      addSheet('InvestJournals', state.investJournals);
       
       if (wb.SheetNames.length === 0) {
         return alert('沒有資料可以匯出');

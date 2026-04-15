@@ -11,6 +11,12 @@ export const useStore = create(
       goals: [],
       yarn: [],
       projects: [],
+      
+      // Investment OS State
+      portfolio: [],
+      investJournals: [],
+      cashBalance: 0,
+
 
       // Actions - Journals
       addJournal: (journal) => set((state) => ({ journals: [...state.journals, { ...journal, id: Date.now() }] })),
@@ -60,6 +66,21 @@ export const useStore = create(
         projects: state.projects.map((p) => (p.id === id ? { ...p, ...updated } : p))
       })),
       removeProject: (id) => set((state) => ({ projects: state.projects.filter((p) => p.id !== id) })),
+
+      // Actions - Investment OS
+      addPortfolio: (item) => set((state) => ({ portfolio: [...state.portfolio, { ...item, id: Date.now() }] })),
+      updatePortfolio: (id, updated) => set((state) => ({
+        portfolio: state.portfolio.map((p) => (p.id === id ? { ...p, ...updated } : p))
+      })),
+      removePortfolio: (id) => set((state) => ({ portfolio: state.portfolio.filter((p) => p.id !== id) })),
+      
+      addInvestJournal: (journal) => set((state) => ({ investJournals: [...state.investJournals, { ...journal, id: Date.now() }] })),
+      updateInvestJournal: (id, updated) => set((state) => ({
+        investJournals: state.investJournals.map((j) => (j.id === id ? { ...j, ...updated } : j))
+      })),
+      removeInvestJournal: (id) => set((state) => ({ investJournals: state.investJournals.filter((j) => j.id !== id) })),
+
+      updateCashBalance: (amount) => set(() => ({ cashBalance: amount })),
     }),
     {
       name: 'second-brain-storage', // key in localStorage
