@@ -44,8 +44,7 @@ const Portfolio = () => {
             querySymbol = `${querySymbol}.TW`;
           }
           
-          const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${querySymbol}?interval=1d&range=1d`;
-          const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`);
+          const response = await fetch(`/api/yahoo/v8/finance/chart/${querySymbol}?interval=1d&range=1d`);
           
           if (response.ok) {
             const data = await response.json();
