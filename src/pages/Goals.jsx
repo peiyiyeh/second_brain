@@ -13,18 +13,21 @@ const Goals = () => {
   const [title, setTitle] = useState('');
   const [target, setTarget] = useState(10);
   const [unit, setUnit] = useState('次');
+  const [deadline, setDeadline] = useState('');
+
   
   const handleSave = () => {
     if (!title) return;
     if (isEditing) {
-      updateGoal(isEditing, { title, target: Number(target), unit });
+      updateGoal(isEditing, { title, target: Number(target), unit, deadline });
       setIsEditing(null);
     } else {
-      addGoal({ title, target: Number(target), unit });
+      addGoal({ title, target: Number(target), unit, deadline });
     }
     setTitle('');
     setTarget(10);
     setUnit('次');
+    setDeadline('');
     setIsAdding(false);
   };
 
@@ -33,8 +36,21 @@ const Goals = () => {
     setTitle(goal.title);
     setTarget(goal.target);
     setUnit(goal.unit || '次');
+    setDeadline(goal.deadline || '');
     setIsAdding(true);
   };
+
+  const isExpired = (goalDeadline) => {
+    if (!goalDeadline) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const d = new Date(goalDeadline);
+    return d < today;
+  };
+
+  const activeGoals = goals.filter(g => !isExpired(g.deadline));
+  const expiredGoals = goals.filter(g => isExpired(g.deadline));
+
 
   return (
     <div className="space-y-12 animate-fade-in pb-12">
@@ -73,12 +89,21 @@ const Goals = () => {
                 value={target}
                 onChange={e => setTarget(e.target.value)}
                 className="w-20 bg-transparent border-b border-[#333333] p-2 text-[#e5e5e5] text-center focus:border-[#bbbbbb] focus:outline-none"
+                title="目標數量"
               />
               <input 
                 type="text" 
                 value={unit}
                 onChange={e => setUnit(e.target.value)}
                 className="w-16 bg-transparent border-b border-[#333333] p-2 text-[#e5e5e5] text-center focus:border-[#bbbbbb] focus:outline-none"
+                title="單位"
+              />
+              <input 
+                type="date" 
+                value={deadline}
+                onChange={e => setDeadline(e.target.value)}
+                className="bg-transparent border-b border-[#333333] p-2 text-[#e5e5e5] text-center focus:border-[#bbbbbb] focus:outline-none ml-2 tracking-widest text-sm"
+                title="到期日"
               />
             </div>
           </div>
@@ -91,7 +116,7 @@ const Goals = () => {
 
       {/* 目標列表 */}
       <section className="space-y-8">
-        {goals.map((g) => (
+        {activeGoals.map((g) => (
           <div key={g.id} className="zen-border p-6 relative group bg-[#1f1f1f] hover:border-[#666666] transition-all duration-500">
             {/* 隱藏操作選單 */}
             <div className="absolute right-4 top-4 flex gap-3 action-hidden z-10">
@@ -113,7 +138,12 @@ const Goals = () => {
             
             <div className="flex justify-between items-start mb-6 pr-16">
               <div>
-                <h3 className="text-xl font-light text-[#e5e5e5] tracking-widest">{g.title}</h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-light text-[#e5e5e5] tracking-widest">{g.title}</h3>
+                  {g.deadline && (
+                    <span className="text-xs border border-[#444444] px-2 py-0.5 text-[#888888]">到期: {g.deadline}</span>
+                  )}
+                </div>
                 <div className="text-[#666666] text-xs font-mono mt-1">
                   進度：{g.current.toFixed(1)} / {g.target} {g.unit}
                 </div>
@@ -137,6 +167,42 @@ const Goals = () => {
           </div>
         )}
       </section>
+
+      {/* 歷史紀錄區 */}
+      {expiredGoals.length > 0 && (
+        <section className="space-y-6 mt-16 pt-8 border-t border-[#333333]">
+          <h2 className="text-xl font-light tracking-widest text-[#888888]">歷史紀錄 (已到期)</h2>
+          <div className="space-y-4">
+            {expiredGoals.map((g) => (
+              <div key={g.id} className="zen-border p-6 relative bg-[#1a1a1a] opacity-70">
+                <div className="absolute right-4 top-4 flex gap-3 z-10">
+                  <button 
+                    onClick={() => removeGoal(g.id)}
+                    className="text-[#ff6666] hover:text-[#ff9999] transition-colors"
+                    title="刪除"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+                
+                <div className="flex justify-between items-start mb-6 pr-16">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-xl font-light text-[#cccccc] tracking-widest">{g.title}</h3>
+                      <span className="text-xs border border-[#444444] px-2 py-0.5 text-[#666666]">到期: {g.deadline}</span>
+                    </div>
+                    <div className="text-[#666666] text-xs font-mono mt-1">
+                      最終進度：{g.current.toFixed(1)} / {g.target} {g.unit}
+                    </div>
+                  </div>
+                </div>
+                
+                <ProgressBar current={g.current} target={g.target} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

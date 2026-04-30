@@ -145,26 +145,43 @@ const Knitting = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {yarn.map(y => (
-              <div key={y.id} className="zen-border p-5 relative group bg-[#1f1a1a] hover:border-[#666666] transition-colors">
-                <button onClick={() => removeYarn(y.id)} className="action-hidden absolute top-4 right-4 text-[#ff6666] hover:text-[#ff9999]"><Trash2 size={16} /></button>
-                <h3 className="text-xl font-light text-[#e5e5e5] mb-1">{y.name}</h3>
-                <p className="text-[#888888] text-sm mb-6 flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full border border-[#555555] inline-block" style={{ backgroundColor: y.color || 'transparent' }}></span>
-                  {y.color || '未標示顏色'}
-                </p>
-                <div className="flex justify-between items-center text-sm border-t border-[#333333] pt-4">
-                  <span className="text-[#666666]">剩餘數量</span>
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => y.quantity > 0 && updateYarn(y.id, { quantity: y.quantity - 1 })} className="w-6 h-6 border border-[#333333] text-[#888888] hover:text-[#e5e5e5] flex items-center justify-center">-</button>
-                    <span className="text-[#e5e5e5] w-6 text-center">{y.quantity}</span>
-                    <button onClick={() => updateYarn(y.id, { quantity: y.quantity + 1 })} className="w-6 h-6 border border-[#333333] text-[#888888] hover:text-[#e5e5e5] flex items-center justify-center">+</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {yarn.length === 0 && !isAddingYarn && <div className="col-span-full border border-dashed border-[#333333] p-12 text-center text-[#555555]">無庫存紀錄</div>}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#333333] text-[#888888] text-sm tracking-widest">
+                  <th className="py-4 px-4 font-normal">名稱</th>
+                  <th className="py-4 px-4 font-normal">顏色</th>
+                  <th className="py-4 px-4 font-normal text-center">數量</th>
+                  <th className="py-4 px-4 font-normal text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...yarn].sort((a, b) => b.id - a.id).map(y => (
+                  <tr key={y.id} className="border-b border-[#222222] hover:bg-[#1f1f1f] transition-colors group">
+                    <td className="py-4 px-4 text-[#e5e5e5]">{y.name}</td>
+                    <td className="py-4 px-4 text-[#888888]">
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full border border-[#555555] inline-block" style={{ backgroundColor: y.color || 'transparent' }}></span>
+                        {y.color || '未標示'}
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center justify-center gap-3">
+                        <button onClick={() => y.quantity > 0 && updateYarn(y.id, { quantity: y.quantity - 1 })} className="w-6 h-6 border border-[#333333] text-[#888888] hover:text-[#e5e5e5] flex items-center justify-center">-</button>
+                        <span className="text-[#e5e5e5] w-6 text-center">{y.quantity}</span>
+                        <button onClick={() => updateYarn(y.id, { quantity: y.quantity + 1 })} className="w-6 h-6 border border-[#333333] text-[#888888] hover:text-[#e5e5e5] flex items-center justify-center">+</button>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 text-right">
+                      <button onClick={() => removeYarn(y.id)} className="text-[#666666] hover:text-[#ff9999] transition-colors opacity-0 group-hover:opacity-100">
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {yarn.length === 0 && !isAddingYarn && <div className="border-t border-dashed border-[#333333] p-12 text-center text-[#555555]">無庫存紀錄</div>}
           </div>
         </section>
       )}
@@ -275,67 +292,65 @@ const Knitting = () => {
             </div>
           )}
 
-          <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.map((p) => (
-              <div key={p.id} className={`zen-border p-6 relative group transition-colors flex flex-col ${p.status === '已完工' ? 'border-[#333333] opacity-70 bg-[#1a1a1a]' : 'bg-[#1f1a1a] hover:border-[#666666]'} ${isEditingProjId === p.id ? 'opacity-50' : ''}`}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-light tracking-wide text-[#e5e5e5]">{p.name}</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse mt-6">
+              <thead>
+                <tr className="border-b border-[#333333] text-[#888888] text-sm tracking-widest">
+                  <th className="py-4 px-4 font-normal">狀態</th>
+                  <th className="py-4 px-4 font-normal">作品名稱</th>
+                  <th className="py-4 px-4 font-normal">工具/材料</th>
+                  <th className="py-4 px-4 font-normal">開始日期</th>
+                  <th className="py-4 px-4 font-normal text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...projects].sort((a, b) => b.id - a.id).map(p => (
+                  <tr key={p.id} className={`border-b border-[#222222] hover:bg-[#1f1f1f] transition-colors group ${p.status === '已完工' ? 'opacity-70 bg-[#1a1a1a]' : ''} ${isEditingProjId === p.id ? 'bg-[#2a2a2a]' : ''}`}>
+                    <td className="py-4 px-4">
                       <span className={`text-xs px-2 py-0.5 border ${p.status === '已完工' ? 'border-[#444444] text-[#888888]' : p.status === '進行中' ? 'border-[#666666] text-[#cccccc] bg-[#333333]' : 'border-[#444444] text-[#888888]'}`}>
                         {p.status}
                       </span>
-                    </div>
-                    <p className="text-[#555555] text-xs mt-2 font-mono">{p.startDate?.split('T')[0]}</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <button onClick={() => startEditProject(p)} className="action-hidden text-[#888888] hover:text-[#cccccc] transition-colors" title="編輯">
-                      <Edit2 size={18} />
-                    </button>
-                    {p.status !== '已完工' && (
-                      <button onClick={() => updateProject(p.id, { status: '已完工', endDate: new Date().toISOString() })} className="action-hidden text-[#bbbbbb] hover:text-[#ffffbb] transition-colors" title="標記完工">
-                        <CheckCircle size={18} className="font-light" />
-                      </button>
-                    )}
-                    <button onClick={() => removeProject(p.id)} className="action-hidden text-[#ff6666] hover:text-[#ff9999] transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                {p.techNotes && (
-                  <div className="bg-[#2a2a2a]/30 p-3 border-l-2 border-[#555555] mb-4 flex-1">
-                    <p className="text-[#cccccc] text-sm whitespace-pre-wrap leading-relaxed tracking-wide">{p.techNotes}</p>
-                  </div>
-                )}
-                
-                <div className="border-t border-[#222222] pt-4 mt-auto">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-2">
-                      <p className="text-[#666666] text-xs">使用材料</p>
-                      <div className="flex flex-wrap gap-2">
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="text-[#e5e5e5]">{p.name}</div>
+                      {p.techNotes && (
+                        <div className="text-[#888888] text-xs mt-1 truncate max-w-xs" title={p.techNotes}>{p.techNotes}</div>
+                      )}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="text-xs text-[#888888] mb-1">{p.needleSize || '未指定工具'}</div>
+                      <div className="flex flex-wrap gap-1 max-w-xs">
                         {p.yarnUsed?.map((yId, idx) => {
                           const yInfo = yarn.find(y => y.id === yId);
                           return yInfo ? (
-                            <span key={yId} className="text-[#888888] text-xs border border-[#333333] px-2 py-1">{yInfo.name} ({yInfo.color})</span>
+                            <span key={yId} className="text-[#666666] text-[10px] border border-[#333333] px-1">{yInfo.name}</span>
                           ) : (
-                            <span key={`custom-${idx}`} className="text-[#888888] text-xs border border-[#333333] px-2 py-1">{yId}</span>
+                            <span key={`custom-${idx}`} className="text-[#666666] text-[10px] border border-[#333333] px-1">{yId}</span>
                           );
                         })}
-                        {(!p.yarnUsed || p.yarnUsed.length === 0) && <span className="text-[#444444] text-xs font-mono">未綁定線材</span>}
                       </div>
-                    </div>
-                    {p.needleSize && (
-                      <div className="text-right pl-4">
-                        <p className="text-[#666666] text-xs mb-1">工具</p>
-                        <p className="text-[#aaaaaa] text-sm tracking-wider">{p.needleSize}</p>
+                    </td>
+                    <td className="py-4 px-4 text-[#666666] text-xs font-mono">{p.startDate?.split('T')[0]}</td>
+                    <td className="py-4 px-4 text-right">
+                      <div className="flex gap-3 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => startEditProject(p)} className="text-[#888888] hover:text-[#cccccc] transition-colors" title="編輯">
+                          <Edit2 size={16} />
+                        </button>
+                        {p.status !== '已完工' && (
+                          <button onClick={() => updateProject(p.id, { status: '已完工', endDate: new Date().toISOString() })} className="text-[#bbbbbb] hover:text-[#ffffbb] transition-colors" title="標記完工">
+                            <CheckCircle size={16} className="font-light" />
+                          </button>
+                        )}
+                        <button onClick={() => removeProject(p.id)} className="text-[#666666] hover:text-[#ff9999] transition-colors">
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {projects.length === 0 && !isAddingProject && <div className="col-span-full border border-dashed border-[#333333] p-12 text-center text-[#555555] tracking-widest">尚無進行中的專案</div>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {projects.length === 0 && !isAddingProject && <div className="border-t border-dashed border-[#333333] p-12 text-center text-[#555555] tracking-widest">尚無進行中的專案</div>}
           </div>
         </section>
       )}
