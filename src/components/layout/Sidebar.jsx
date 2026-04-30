@@ -84,6 +84,7 @@ const Sidebar = () => {
         }
       } catch (error) {
         alert('解析 JSON 檔案失敗，檔案可能損毀或非可用格式。');
+        console.error(error);
       }
     };
     reader.readAsText(file);

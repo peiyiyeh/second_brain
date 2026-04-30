@@ -15,7 +15,6 @@ const Dashboard = () => {
   const topGoals = goals.slice(0, 3);
   const recentJournals = [...journals].sort((a, b) => b.id - a.id).slice(0, 3);
   const recentAwareness = [...awareness].sort((a, b) => b.id - a.id).slice(0, 3);
-  const recentInventory = [...inventory].sort((a, b) => b.id - a.id).slice(0, 5);
 
   const today = new Date();
   const dailyQuoteObj = getDailyQuote();
