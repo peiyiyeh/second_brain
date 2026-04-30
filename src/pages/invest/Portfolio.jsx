@@ -38,20 +38,33 @@ const Portfolio = () => {
       const symbolsToUpdate = portfolio.filter(p => !!p.symbol);
       for (const item of symbolsToUpdate) {
         try {
-          // Add .TW for Taiwan stocks/ETFs if it starts with a digit (4-6 chars) and lacks a suffix
           let querySymbol = item.symbol;
+          let isTaiwanAutoAppended = false;
           if (/^\d[A-Za-z0-9]{3,5}$/.test(querySymbol) && !querySymbol.includes('.')) {
             querySymbol = `${querySymbol}.TW`;
+            isTaiwanAutoAppended = true;
           }
           
-          const response = await fetch(`/api/yahoo/v8/finance/chart/${querySymbol}?interval=1d&range=1d`);
+          let response = await fetch(`/api/yahoo/v8/finance/chart/${querySymbol}?interval=1d&range=1d`);
+          let price = null;
           
           if (response.ok) {
             const data = await response.json();
-            const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-            if (price) {
-              updatePortfolio(item.id, { currentPrice: Number(price) });
+            price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
+          }
+
+          // Fallback to OTC (.TWO) if TWSE (.TW) has no data
+          if (!price && isTaiwanAutoAppended) {
+            querySymbol = `${item.symbol}.TWO`;
+            response = await fetch(`/api/yahoo/v8/finance/chart/${querySymbol}?interval=1d&range=1d`);
+            if (response.ok) {
+              const data = await response.json();
+              price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
             }
+          }
+
+          if (price) {
+            updatePortfolio(item.id, { currentPrice: Number(price) });
           }
         } catch (err) {
           console.error(`Failed to fetch price for ${item.symbol}`, err);
