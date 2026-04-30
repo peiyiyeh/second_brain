@@ -38,9 +38,9 @@ const Portfolio = () => {
       const symbolsToUpdate = portfolio.filter(p => !!p.symbol);
       for (const item of symbolsToUpdate) {
         try {
-          // Add .TW for Taiwan stocks if it's purely digits and doesn't have a suffix
+          // Add .TW for Taiwan stocks/ETFs if it starts with a digit (4-6 chars) and lacks a suffix
           let querySymbol = item.symbol;
-          if (/^\d{4}$/.test(querySymbol)) {
+          if (/^\d[A-Za-z0-9]{3,5}$/.test(querySymbol) && !querySymbol.includes('.')) {
             querySymbol = `${querySymbol}.TW`;
           }
           
